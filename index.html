@@ -72,6 +72,35 @@
                 if (key === 39 && direction !== "left") direction = "right";
                 if (key === 40 && direction !== "up") direction = "down";
             }
+            
+            function handleTouch(event) {
+                const touchX = event.changedTouches[0].clientX;
+                const touchY = event.changedTouches[0].clientY;
+                
+                const canvasRect = canvas.getBoundingClientRect();
+                const canvasX = touchX - canvasRect.left;
+                const canvasY = touchY - canvasRect.top;
+                
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                
+                const deltaX = canvasX - centerX;
+                const deltaY = canvasY - centerY;
+                
+                if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                    if (deltaX > 0 && direction !== "left") {
+                        direction = "right";
+                    } else if (deltaX < 0 && direction !== "right") {
+                        direction = "left";
+                    }
+                } else {
+                    if (deltaY > 0 && direction !== "up") {
+                        direction = "down";
+                    } else if (deltaY < 0 && direction !== "down") {
+                        direction = "up";
+                    }
+                }
+            }
 
             function generateFood() {
                 const maxX = boardSize - 1;
@@ -130,6 +159,7 @@
             const gameInterval = setInterval(gameLoop, initialSpeed);
 
             document.addEventListener("keydown", changeDirection);
+            canvas.addEventListener("touchstart", handleTouch);
         });
     </script>
 </body>
