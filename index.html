@@ -3,38 +3,16 @@
 <head>
     <title>Snake Game</title>
     <style>
-        #game-board {
-            width: 400px;
-            height: 400px;
+        canvas {
             border: 1px solid black;
-            position: relative;
+            display: block;
             margin: 0 auto;
-        }
-
-        .cell {
-            width: 20px;
-            height: 20px;
-            background-color: white;
-            border: 1px solid black;
-            position: absolute;
-        }
-
-        #snake-head {
-            background-color: green;
-        }
-
-        .snake-body {
-            background-color: lightgreen;
-        }
-
-        #food {
-            background-color: red;
         }
     </style>
 </head>
 <body>
     <h1>Snake Game</h1>
-    <div id="game-board"></div>
+    <canvas id="game-board" width="400" height="400"></canvas>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -47,22 +25,19 @@
             let food = { x: 15, y: 10 }; // Initial position of the food
             let score = 0; // Initial score
 
-            const gameBoard = document.getElementById("game-board");
+            const canvas = document.getElementById("game-board");
+            const context = canvas.getContext("2d");
 
-            function createCell(x, y, className) {
-                const cell = document.createElement("div");
-                cell.className = className;
-                cell.style.left = `${x * cellSize}px`;
-                cell.style.top = `${y * cellSize}px`;
-                return cell;
+            function drawCell(x, y, color) {
+                context.fillStyle = color;
+                context.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                context.strokeStyle = "black";
+                context.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
             }
 
             function drawSnake() {
-                gameBoard.innerHTML = "";
-                snake.forEach((segment, index) => {
-                    const className = index === 0 ? "cell snake-head" : "cell snake-body";
-                    const cell = createCell(segment.x, segment.y, className);
-                    gameBoard.appendChild(cell);
+                snake.forEach(segment => {
+                    drawCell(segment.x, segment.y, "lightgreen");
                 });
             }
 
@@ -138,15 +113,20 @@
                 scoreElement.textContent = `Score: ${score}`;
             }
 
-            function gameLoop() {
+            function drawGame() {
+                context.clearRect(0, 0, canvas.width, canvas.height);
                 drawSnake();
+                drawCell(food.x, food.y, "red");
+            }
+
+            function gameLoop() {
                 moveSnake();
                 checkCollision();
                 updateScore();
+                drawGame();
             }
 
             generateFood();
-            drawSnake();
             const gameInterval = setInterval(gameLoop, initialSpeed);
 
             document.addEventListener("keydown", changeDirection);
